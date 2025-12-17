@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lista zakupów – pracownie</title>
   <link rel="icon" href="/anglofav.ico" type="image/x-icon">
+  <title>Lista zakupów – pracownie</title>
   <style>
     :root{
       --bg:#f6f7fb;
@@ -91,12 +91,55 @@
     }
     .grand strong{font-size:16px}
     .grand span{opacity:.9; font-variant-numeric:tabular-nums}
+  
+    /* Tabs */
+    .tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:10px;
+      background:linear-gradient(0deg, #ffffff 0%, #f8fafc 100%);
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow:0 6px 18px rgba(17,24,39,.06);
+    }
+    .tab-btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:14px;
+      cursor:pointer;
+    }
+    .tab-btn[aria-selected="true"]{
+      border-color:rgba(79,70,229,.35);
+      box-shadow:0 0 0 4px rgba(79,70,229,.10);
+    }
+    .tab-panel{ display:none; }
+    .tab-panel.active{ display:block; }
+
+    /* School tables */
+    table.checktable col.col-check{ width:44px; }
+    table.checktable col.col-name{ width:auto; }
+    th.check, td.check{ text-align:center; font-weight:800; }
+    td.check{ color:#16a34a; }
+
   </style>
 </head>
 <body>
+  
   <div class="wrap">
 
-    <!-- EDUVIS – zamówienie 591,74 -->
+    <div class="tabs" role="tablist" aria-label="Listy zakupów">
+      <button class="tab-btn" role="tab" id="tabbtn-1" aria-controls="tab-1" aria-selected="true">Składka – planowane zakupy</button>
+      <button class="tab-btn" role="tab" id="tabbtn-2" aria-controls="tab-2" aria-selected="false">Szkoła – zakupy realizowane</button>
+    </div>
+
+    <div id="tab-1" class="tab-panel active" role="tabpanel" aria-labelledby="tabbtn-1">
+<!-- EDUVIS – zamówienie 591,74 -->
     <section class="section">
       <h2>eduvis.pl <small>Zamówienie: 591,74 zł (dodatkowo koszty wysyłki)</small></h2>
       <table>
@@ -226,6 +269,135 @@
       <span>591,74 + 762,40 + 2 725,80 + 762,40 + 2 725,80 = <b>7 567,? zł</b> (bez kosztów wysyłki)</span>
     </div>
 
+  
+    </div>
+
+    <div id="tab-2" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-2">
+
+    <section class="section">
+      <h2>Szkoła – odczynniki / substancje <small>✓ = kupione</small></h2>
+      <table class="checktable">
+        <colgroup><col class="col-check"/><col class="col-name"/></colgroup>
+        <thead>
+          <tr><th class="check">✓</th><th>Przedmiot</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="check">✓</td><td>Siarka</td></tr>
+          <tr><td class="check">✓</td><td>Oranż metylowy</td></tr>
+          <tr><td class="check">✓</td><td>Fenoloftaleina</td></tr>
+          <tr><td class="check">✓</td><td>Stężony roztwór kwasu siarkowego(VI)</td></tr>
+          <tr><td class="check">✓</td><td>Stężony roztwór kwasu azotowego(V)</td></tr>
+          <tr><td class="check">✓</td><td>Kwas chlorowodorowy</td></tr>
+          <tr><td class="check">✓</td><td>Węglan wapnia</td></tr>
+          <tr><td class="check">✓</td><td>Fosfor czerwony</td></tr>
+          <tr><td class="check">✓</td><td>Azotan(V) potasu</td></tr>
+          <tr><td class="check">✓</td><td>Siarczan(VI) miedzi(II)</td></tr>
+          <tr><td class="check">✓</td><td>Siarczan(VI) wapnia</td></tr>
+          <tr><td class="check">✓</td><td>Wodorotlenek sodu</td></tr>
+          <tr><td class="check">✓</td><td>Magnez (wiórki)</td></tr>
+          <tr><td class="check">✓</td><td>Wodorotlenek wapnia</td></tr>
+          <tr><td class="check">✓</td><td>Azotan(V) srebra(I)</td></tr>
+          <tr><td class="check">✓</td><td>Siarczan(VI) sodu</td></tr>
+          <tr><td class="check">✓</td><td>Chlorek sodu</td></tr>
+          <tr><td class="check">✓</td><td>Chlorek wapnia</td></tr>
+          <tr><td class="check">✓</td><td>Etanol</td></tr>
+          <tr><td class="check">✓</td><td>Glicerol</td></tr>
+          <tr><td class="check">✓</td><td>Stężony kwas octowy</td></tr>
+          <tr><td class="check">✓</td><td>Tlenek miedzi(II)</td></tr>
+          <tr><td class="check">✓</td><td>Kwas palmitynowy</td></tr>
+          <tr><td class="check">✓</td><td>Kwas stearynowy</td></tr>
+          <tr><td class="check">✓</td><td>Kwas oleinowy</td></tr>
+          <tr><td class="check">✓</td><td>Manganian(VII) potasu</td></tr>
+          <tr><td class="check">✓</td><td>Benzyna</td></tr>
+          <tr><td class="check">✓</td><td>Glukoza</td></tr>
+          <tr><td class="check">✓</td><td>Fruktoza</td></tr>
+          <tr><td class="check">✓</td><td>Sacharoza</td></tr>
+          <tr><td class="check">✓</td><td>Jodyna</td></tr>
+          <tr><td class="check">✓</td><td>Woda destylowana – baniak</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Szkoła – sprzęt laboratoryjny <small>✓ = kupione</small></h2>
+      <table class="checktable">
+        <colgroup><col class="col-check"/><col class="col-name"/></colgroup>
+        <thead>
+          <tr><th class="check">✓</th><th>Przedmiot</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="check">✓</td><td>Łyżka do spalania</td></tr>
+          <tr><td class="check">✓</td><td>Probówki (20 szt.)</td></tr>
+          <tr><td class="check">✓</td><td>Łapa do probówek</td></tr>
+          <tr><td class="check">✓</td><td>Pipeta 5 ml</td></tr>
+          <tr><td class="check">✓</td><td>Zlewki (różne pojemności, np. 50 ml, 100 ml, 250 ml)</td></tr>
+          <tr><td class="check">✓</td><td>Bagietki (5 szt.)</td></tr>
+          <tr><td class="check">✓</td><td>Rurki odprowadzające z korkiem do probówek</td></tr>
+          <tr><td class="check">✓</td><td>Szkiełka zegarkowe / szalki Petriego (5 szt.)</td></tr>
+          <tr><td class="check">✓</td><td>Stojak na probówki (2 szt.)</td></tr>
+          <tr><td class="check">✓</td><td>Kolba stożkowa z korkiem 50 ml</td></tr>
+          <tr><td class="check">✓</td><td>Palnik laboratoryjny</td></tr>
+          <tr><td class="check">✓</td><td>Trójnóg do ogrzewania</td></tr>
+          <tr><td class="check">✓</td><td>Siatka ceramiczna lub druciana</td></tr>
+          <tr><td class="check">✓</td><td>Łyżeczki i szpatułki (4 szt.)</td></tr>
+          <tr><td class="check">✓</td><td>Termometr</td></tr>
+          <tr><td class="check">✓</td><td>Krystalizator (2 szt.)</td></tr>
+          <tr><td class="check">✓</td><td>Papierki wskaźnikowe pH</td></tr>
+          <tr><td class="check">✓</td><td>Zamykana szafka na klucz na odczynniki i szkło</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Szkoła – do dokupienia <small>niekupione</small></h2>
+      <table class="checktable">
+        <colgroup><col class="col-check"/><col class="col-name"/></colgroup>
+        <thead>
+          <tr><th class="check">✓</th><th>Przedmiot</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="check"></td><td>5 l wody destylowanej</td></tr>
+          <tr><td class="check"></td><td>Moździerz</td></tr>
+          <tr><td class="check"></td><td>Gumowe korki do probówek</td></tr>
+          <tr><td class="check"></td><td>Plastikowe pipety + gruszka</td></tr>
+          <tr><td class="check"></td><td>Lejek + sączki</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    </div>
+
   </div>
+
+  <script>
+    (function () {
+      const btn1 = document.getElementById('tabbtn-1');
+      const btn2 = document.getElementById('tabbtn-2');
+      const tab1 = document.getElementById('tab-1');
+      const tab2 = document.getElementById('tab-2');
+
+      function activate(which) {
+        const isFirst = which === 1;
+        btn1.setAttribute('aria-selected', String(isFirst));
+        btn2.setAttribute('aria-selected', String(!isFirst));
+        tab1.classList.toggle('active', isFirst);
+        tab2.classList.toggle('active', !isFirst);
+      }
+
+      btn1.addEventListener('click', () => activate(1));
+      btn2.addEventListener('click', () => activate(2));
+
+      // Keyboard: left/right arrows
+      [btn1, btn2].forEach((btn, idx) => {
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            activate(e.key === 'ArrowRight' ? 2 : 1);
+            (e.key === 'ArrowRight' ? btn2 : btn1).focus();
+          }
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
