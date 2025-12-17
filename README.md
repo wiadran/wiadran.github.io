@@ -1,1 +1,0 @@
-# wiadran.github.io
