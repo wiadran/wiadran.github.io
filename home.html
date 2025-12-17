@@ -1,377 +1,229 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lista planowanych zakupów</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lista zakupów – pracownie</title>
   <style>
     :root{
-      --bg: #f6f8fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --head: #eef2ff;
-      --accent: #3b82f6;
-      --sumBg: #f3f4f6;
-      --shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --head:#eef2ff;
+      --accent:#4f46e5;
+      --sum:#f0fdf4;
+      --sumLine:#bbf7d0;
     }
-
+    *{box-sizing:border-box}
     body{
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
+      margin:0; padding:24px;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      line-height: 1.4;
-      padding: 24px;
+      background:var(--bg); color:var(--text);
     }
-
-    .wrap{
-      max-width: 1050px;
-      margin: 0 auto;
-    }
-
-    h1{
-      font-size: 22px;
-      margin: 0 0 12px;
-      letter-spacing: .2px;
-    }
-
-    .note{
-      margin: 0 0 22px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
+    .wrap{max-width:1100px; margin:0 auto; display:grid; gap:18px;}
     .section{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      margin: 18px 0;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(17,24,39,.06);
     }
-
-    .section-header{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
-      border-bottom: 1px solid var(--border);
+    .section h2{
+      margin:0;
+      padding:14px 16px;
+      font-size:16px;
+      background:linear-gradient(0deg, #ffffff 0%, #f8fafc 100%);
+      border-bottom:1px solid var(--line);
+      display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
     }
-
-    .section-title{
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
-
-    .badge{
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #3730a3;
-      border: 1px solid #e0e7ff;
-      white-space: nowrap;
-    }
-
+    .section h2 small{color:var(--muted); font-weight:500}
     table{
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed; /* <- to wyrównuje szerokości kolumn między tabelami */
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed; /* <-- wyrównuje kolumny między tabelami */
     }
-
-    col.col-item{ width: 72%; }  /* stałe proporcje kolumn */
-    col.col-price{ width: 28%; }
-
+    colgroup col:nth-child(1){width:78%}
+    colgroup col:nth-child(2){width:22%}
     thead th{
-      text-align: left;
-      font-size: 13px;
-      color: #374151;
-      background: var(--head);
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
+      background:var(--head);
+      color:#111827;
+      font-weight:700;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
     }
-
     tbody td{
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-      font-size: 14px;
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      font-size:14px;
+      word-wrap:break-word;
+      overflow-wrap:anywhere;
     }
-
-    tbody tr:nth-child(even) td{
-      background: #fbfdff;
-    }
-
-    td.item{
-      overflow-wrap: anywhere;
-    }
-
-    td.price{
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-      color: #111827;
-    }
-
-    tr.sum-row td{
-      background: var(--sumBg) !important;
-      font-weight: 700;
-      border-top: 1px solid var(--border);
-    }
-
-    tr.sum-row td.price{
-      color: #0f172a;
-    }
-
-    .summary-grid{
-      display: grid;
-      gap: 10px;
-      padding: 14px 16px 16px;
-    }
-
-    .summary-row{
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #ffffff;
-    }
-
-    .summary-row strong{
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-
-    .summary-total{
-      border-color: #c7d2fe;
-      background: #eef2ff;
-    }
-
-    .summary-total strong{
-      color: #1d4ed8;
-    }
-
-    .divider{
-      height: 1px;
-      background: var(--border);
-      margin: 0;
-    }
-
-    /* opcjonalnie: linki w przyszłości będą wyglądać naturalnie */
+    tbody tr:hover td{background:#fafafa}
+    td.amount{ text-align:right; white-space:nowrap; font-variant-numeric: tabular-nums; }
     a{
-      color: inherit;
-      text-decoration: none;
-      border-bottom: 1px dashed rgba(59,130,246,.35);
+      color:var(--accent);
+      text-decoration:none;
     }
-    a:hover{
-      border-bottom-color: rgba(59,130,246,.9);
+    a:hover{ text-decoration:underline; }
+    .sum{
+      background:var(--sum);
+      font-weight:800;
     }
+    .sum td{
+      border-top:2px solid var(--sumLine);
+      border-bottom:0;
+    }
+    .grand{
+      background:#0b1220;
+      color:#fff;
+      border-radius:14px;
+      padding:14px 16px;
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 10px 22px rgba(0,0,0,.18);
+      display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    }
+    .grand strong{font-size:16px}
+    .grand span{opacity:.9; font-variant-numeric:tabular-nums}
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <h1>Lista planowanych zakupów</h1>
-    <p class="note">Zestawienie pozycji wg sklepów / zamówień. Wszystkie kwoty jak na liście (bez kosztów wysyłki).</p>
 
-    <!-- eduwis.pl #1 -->
+    <!-- EDUVIS – zamówienie 591,74 -->
     <section class="section">
-      <div class="section-header">
-        <div class="section-title">
-          eduwis.pl
-          <span class="badge">zamówienie 1</span>
-        </div>
-      </div>
-
+      <h2>eduvis.pl <small>Zamówienie: 591,74 zł (dodatkowo koszty wysyłki)</small></h2>
       <table>
-        <colgroup>
-          <col class="col-item" />
-          <col class="col-price" />
-        </colgroup>
+        <colgroup><col /><col /></colgroup>
         <thead>
-          <tr>
-            <th>Przedmiot</th>
-            <th style="text-align:right;">Kwota</th>
-          </tr>
+          <tr><th>Przedmiot</th><th class="amount">Kwota</th></tr>
         </thead>
         <tbody>
-          <tr><td class="item">Balansujący ptak</td><td class="price">20,00 zł</td></tr>
-          <tr><td class="item">Rura Newtona (wersja z gotową próżnią)</td><td class="price">169,00 zł</td></tr>
-          <tr><td class="item">Podwójny stożek</td><td class="price">74,00 zł</td></tr>
-          <tr><td class="item">Lewitujące magnesy</td><td class="price">39,00 zł</td></tr>
-          <tr><td class="item">Elektromagnes – zestaw w pudełku</td><td class="price">69,00 zł</td></tr>
-          <tr><td class="item">Dwa magnesy sztabkowe 180x27x15mm</td><td class="price">120,00 zł</td></tr>
-          <tr><td class="item">Magnes podkowiasty 106x86x33,5mm</td><td class="price">89,00 zł</td></tr>
-          <tr><td class="item">Zasilacz szkolny 15V/2A DC LED</td><td class="price">169,00 zł</td></tr>
-          <tr><td class="item">Zestaw do badania dyfrakcji światła na szczelinie</td><td class="price">39,00 zł</td></tr>
-          <tr><td class="item">Zestaw do badania interferencji światła – doświadczenie Younga</td><td class="price">39,00 zł</td></tr>
-          <tr><td class="item">Przyrząd do demonstracji przemiany pracy w energię wewnętrzną</td><td class="price">59,00 zł</td></tr>
-          <tr><td class="item">Zestaw do badania ruchu jednostajnego</td><td class="price">55,00 zł</td></tr>
-          <tr class="sum-row"><td>Suma</td><td class="price">591,74 zł</td></tr>
+          <tr><td>Balansujący ptak</td><td class="amount">20,00 zł</td></tr>
+          <tr><td>Rura Newtona (wersja z gotową próżnią)</td><td class="amount">169,00 zł</td></tr>
+          <tr><td>Podwójny stożek</td><td class="amount">74,00 zł</td></tr>
+          <tr><td>Lewitujące magnesy</td><td class="amount">39,00 zł</td></tr>
+          <tr><td>Elektromagnes - zestaw w pudełku</td><td class="amount">69,00 zł</td></tr>
+          <tr><td>Dwa magnesy sztabkowe 180x27x15mm</td><td class="amount">120,00 zł</td></tr>
+          <tr><td>Magnes podkowiasty 106x86x33,5mm</td><td class="amount">89,00 zł</td></tr>
+          <tr>
+            <td><a href="https://www.eduvis.pl/oferta/fizyka-pomoce-dydaktyczne/zestaw-nr-239-zasilacz-szkolny-15v-2a-dc-led-detail" target="_blank" rel="noopener">Zasilacz szkolny 15V/2A DC LED</a></td>
+            <td class="amount">169,00 zł</td>
+          </tr>
+          <tr><td>Zestaw do badania dyfrakcji światła na szczelinie</td><td class="amount">39,00 zł</td></tr>
+          <tr><td>Zestaw do badania interferencji światła - doświadczenie Younga</td><td class="amount">39,00 zł</td></tr>
+          <tr><td>Przyrząd do demonstracji przemiany pracy w energię wewnętrzną</td><td class="amount">59,00 zł</td></tr>
+          <tr><td>Zestaw do badania ruchu jednostajnego</td><td class="amount">55,00 zł</td></tr>
+
+          <tr class="sum"><td>Suma</td><td class="amount">591,74 zł</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- eduwis.pl #2 -->
+    <!-- EDUVIS – zamówienie 762,40 -->
     <section class="section">
-      <div class="section-header">
-        <div class="section-title">
-          eduwis.pl
-          <span class="badge">zamówienie 2</span>
-        </div>
-      </div>
-
+      <h2>eduvis.pl <small>Zamówienie: 762,40 zł (dostawa za darmo)</small></h2>
       <table>
-        <colgroup>
-          <col class="col-item" />
-          <col class="col-price" />
-        </colgroup>
+        <colgroup><col /><col /></colgroup>
         <thead>
-          <tr>
-            <th>Przedmiot</th>
-            <th style="text-align:right;">Kwota</th>
-          </tr>
+          <tr><th>Przedmiot</th><th class="amount">Kwota</th></tr>
         </thead>
         <tbody>
-          <tr><td class="item">Krążek Newtona z napędem ręcznym</td><td class="price">105,00 zł</td></tr>
-          <tr><td class="item">Diabelska pętla</td><td class="price">99,00 zł</td></tr>
-          <tr><td class="item">Zestaw do efektownej demonstracji zjawiska indukcji elektromagnetycznej</td><td class="price">72,00 zł</td></tr>
-          <tr class="sum-row"><td>Suma</td><td class="price">276,00 zł</td></tr>
+          <tr><td>Krążek Newtona z napędem ręcznym</td><td class="amount">105,00 zł</td></tr>
+          <tr><td>Diabelska pętla</td><td class="amount">99,00 zł</td></tr>
+          <tr><td>Zestaw do efektownej demonstracji zjawiska indukcji elektromagnetycznej</td><td class="amount">72,00 zł</td></tr>
+
+          <tr class="sum"><td>Suma</td><td class="amount">762,40 zł</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- jangar.pl #1 -->
+    <!-- JANGAR – lista (długa) -->
     <section class="section">
-      <div class="section-header">
-        <div class="section-title">
-          jangar.pl
-          <span class="badge">zamówienie</span>
-        </div>
-      </div>
-
+      <h2>jangar.pl <small>Lista (głównie fizyka)</small></h2>
       <table>
-        <colgroup>
-          <col class="col-item" />
-          <col class="col-price" />
-        </colgroup>
+        <colgroup><col /><col /></colgroup>
         <thead>
-          <tr>
-            <th>Przedmiot</th>
-            <th style="text-align:right;">Kwota</th>
-          </tr>
+          <tr><th>Przedmiot</th><th class="amount">Kwota</th></tr>
         </thead>
         <tbody>
-          <tr><td class="item">Przyrząd bimetaliczny</td><td class="price">38,50 zł</td></tr>
-          <tr><td class="item">Zestaw 6 różnych cylindrów – jednakowy ciężar</td><td class="price">150,00 zł</td></tr>
-          <tr><td class="item">Zestaw 3kul-ciężarków (25mm) z zawieszkami</td><td class="price">61,00 zł</td></tr>
-          <tr><td class="item">Termometr Galileusza (28cm)</td><td class="price">79,90 zł</td></tr>
-          <tr><td class="item">2x Drut z pamięcią kształtu, 20cm</td><td class="price">44,00 zł</td></tr>
-          <tr><td class="item">Sprężyna wędrująca</td><td class="price">24,00 zł</td></tr>
-          <tr><td class="item">Słońce, Ziemia i Księżyc w ruchu – model IV (tellurium)</td><td class="price">365,00 zł</td></tr>
-          <tr class="sum-row"><td>Suma</td><td class="price">762,40 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/871-zestaw-do-badania-rozszerzalnosci-cieplnej.html" target="_blank" rel="noopener">Zestaw do badania rozszerzalności cieplnej</a></td><td class="amount">48,10 zł</td></tr>
+          <tr><td>Zestaw do demonstracji Prawa Archimedesa ze statywem</td><td class="amount">143,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/875-naczynia-polaczone.html" target="_blank" rel="noopener">Naczynia połączone</a></td><td class="amount">40,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/890-naczynia-kapilarne.html" target="_blank" rel="noopener">Naczynia kapilarne</a></td><td class="amount">40,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/ruch-i-sia/3273-dynamometr-silomierz-zestaw-6-roznych.html" target="_blank" rel="noopener">Dynamometr/Siłomierz - zestaw 6szt.</a></td><td class="amount">113,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/6533-radiometr-crookesa-sr-70-mm.html" target="_blank" rel="noopener">Radiometr Crookesa, śr 70mm</a></td><td class="amount">63,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/elektrostatyka/6325-paleczka-elektrostatyczna-szklana.html" target="_blank" rel="noopener">2x Pałeczka elektrostatyczna, szklana</a></td><td class="amount">34,40 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/elektrostatyka/825-paleczka-elektrostatyczna-ebonitowa.html" target="_blank" rel="noopener">2x Pałeczka elektrostatyczna, ebonitowa</a></td><td class="amount">27,60 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/elektrostatyka/6149-duzy-elektroskop-wychylowy-z-szybkami-i-skala.html" target="_blank" rel="noopener">Duży elektroskop wychyłowy z szybkami i skalą</a></td><td class="amount">197,00 zł</td></tr>
+          <tr><td>Magnesy neodymowe 10x4mm - 10szt.</td><td class="amount">45,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/przyrzady-do-pomiarow-i-wykonywania-doswiadcze/3054-igla-magnetyczna-na-2-czesciowej-podstawie-10-cm.html" target="_blank" rel="noopener">Igła magnetyczna na 2-częściowej podstawie 10cm</a></td><td class="amount">40,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/magnetyzm-i-elektromagnetyzm/6511-rozszerzony-zestaw-do-magnetyzmu-i-demonstracji-pradow-wirowych.html" target="_blank" rel="noopener">Rozszerzony zestaw do magnetyzmu i demonstracji prądów wirowych</a></td><td class="amount">282,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/technika/236-przewody-bananowe-do-pietrowego-dolaczania-50cm-kpl2.html" target="_blank" rel="noopener">4x Przewody bananowe do piętrowego dołączania, 50cm</a></td><td class="amount">68,80 zł</td></tr>
+          <tr><td>Model działania silnika elektrycznego prądu stałego (III)</td><td class="amount">240,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/ruch-i-sia/3051-kolyska-newtona.html" target="_blank" rel="noopener">Kołyska Newtona</a></td><td class="amount">63,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/ruch-drgajacy-i-fale-akustyka/865-kamertony-z-pudlami-rezonansowymi-kpl-2-z-mlotkiem.html" target="_blank" rel="noopener">Kamertony z pudłami rezonansowymi - komplet 2 z młotkiem</a></td><td class="amount">161,00 zł</td></tr>
+          <tr><td>Cylinder miarowy 50ml - 2szt.</td><td class="amount">24,60 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/wagi/6647-waga-elektroniczna-przenosna-1-gmax-1000-g.html" target="_blank" rel="noopener">Waga elektroniczna przenośna 1g/max 1000g</a></td><td class="amount">99,30 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/optyka-i-fale-elektromagnetyczne/6372-zestaw-magnetyczny-do-optyki-geometrycznej-z-laserem-diodowym-w-walizce-i.html" target="_blank" rel="noopener">Zestaw magnetyczny do optyki geometrycznej z laserem diodowym (w walizce)</a></td><td class="amount">399,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/elektryczno-energia/3261-seria-blue-podstawowe-obwody-elektryczne.html" target="_blank" rel="noopener">Podstawowe obwody elektryczne</a></td><td class="amount">243,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/sprzet-i-szklo-laboratoryjne/159-okulary-ochronne-wersja-podstawowa-10.html" target="_blank" rel="noopener">30x Okulary ochronne, wersja podstawowa</a></td><td class="amount">354,00 zł</td></tr>
+
+          <tr class="sum"><td>Suma</td><td class="amount">2 725,80 zł</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- jangar.pl future -->
+    <!-- JANGAR – “co trzeba dokupić później” -->
     <section class="section">
-      <div class="section-header">
-        <div class="section-title">
-          jangar.pl
-          <span class="badge">do dokupienia później</span>
-        </div>
-      </div>
-
+      <h2>jangar.pl <small>Co trzeba dokupić później</small></h2>
       <table>
-        <colgroup>
-          <col class="col-item" />
-          <col class="col-price" />
-        </colgroup>
+        <colgroup><col /><col /></colgroup>
         <thead>
-          <tr>
-            <th>Przedmiot</th>
-            <th style="text-align:right;">Kwota</th>
-          </tr>
+          <tr><th>Przedmiot</th><th class="amount">Kwota</th></tr>
         </thead>
         <tbody>
-          <tr><td class="item">Zestaw do badania rozszerzalności cieplnej</td><td class="price">48,10 zł</td></tr>
-          <tr><td class="item">Zestaw do demonstracji Prawa Archimedesa ze statywem</td><td class="price">143,00 zł</td></tr>
-          <tr><td class="item">Naczynia połączone</td><td class="price">40,00 zł</td></tr>
-          <tr><td class="item">Naczynia kapilarne</td><td class="price">40,00 zł</td></tr>
-          <tr><td class="item">Dynamometr/Siłomierz – zestaw 6szt.</td><td class="price">113,00 zł</td></tr>
-          <tr><td class="item">Radiometr Crookesa, śr 70mm</td><td class="price">63,00 zł</td></tr>
-          <tr><td class="item">2x Pałeczka elektrostatyczna, szklana</td><td class="price">34,40 zł</td></tr>
-          <tr><td class="item">2x Pałeczka elektrostatyczna, ebonitowa</td><td class="price">27,60 zł</td></tr>
-          <tr><td class="item">Duży elektroskop wychyłowy z szybkami i skalą</td><td class="price">197,00 zł</td></tr>
-          <tr><td class="item">Magnesy neodymowe 10x4mm – 10szt.</td><td class="price">45,00 zł</td></tr>
-          <tr><td class="item">Igła magnetyczna na 2-częściowej podstawie 10cm</td><td class="price">40,00 zł</td></tr>
-          <tr><td class="item">Rozszerzony zestaw do magnetyzmu i demonstracji prądów wirowych</td><td class="price">282,00 zł</td></tr>
-          <tr><td class="item">4x Przewody bananowe do piętrowego dołączania, 50cm</td><td class="price">68,80 zł</td></tr>
-          <tr><td class="item">Model działania silnika elektrycznego prądu stałego (III)</td><td class="price">240,00 zł</td></tr>
-          <tr><td class="item">Kołyska Newtona</td><td class="price">63,00 zł</td></tr>
-          <tr><td class="item">Kamertony z pudłami rezonansowymi – komplet 2 z młotkiem</td><td class="price">161,00 zł</td></tr>
-          <tr><td class="item">Cylinder miarowy 50ml – 2szt.</td><td class="price">24,60 zł</td></tr>
-          <tr><td class="item">Waga elektroniczna przenośna 1g/max 1000g</td><td class="price">99,30 zł</td></tr>
-          <tr><td class="item">Zestaw magnetyczny do optyki geometrycznej z laserem diodowym (w walizce)</td><td class="price">399,00 zł</td></tr>
-          <tr><td class="item">Podstawowe obwody elektryczne</td><td class="price">243,00 zł</td></tr>
-          <tr><td class="item">30x Okulary ochronne, wersja podstawowa</td><td class="price">354,00 zł</td></tr>
-          <tr class="sum-row"><td>Suma</td><td class="price">2 725,80 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/873-przyrzad-bimetaliczny.html" target="_blank" rel="noopener">Przyrząd bimetaliczny</a></td><td class="amount">38,50 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/874-zestaw-6-roznych-cylindrow-jednakowy-ciezar.html" target="_blank" rel="noopener">Zestaw 6 różnych cylindrów - jednakowy ciężar</a></td><td class="amount">150,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/2944-zestaw-3-kul-ciezarkow-25-mm-z-zawieszkami-z-mosiadzu-miedzi-i-stali.html" target="_blank" rel="noopener">Zestaw 3kul-ciężarków (25mm) z zawieszkami</a></td><td class="amount">61,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/pogoda/7010-termometr-galileusza.html" target="_blank" rel="noopener">Termometr Galileusza (28cm)</a></td><td class="amount">79,90 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/6992-drut-z-pamiecia-ksztaltu-20-cm.html" target="_blank" rel="noopener">2x Drut z pamięcią kształtu, 20cm</a></td><td class="amount">44,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/waciwoci-materii/836-sprezyna-wedrujaca.html" target="_blank" rel="noopener">Sprężyna wędrująca</a></td><td class="amount">24,00 zł</td></tr>
+          <tr><td><a href="https://jangar.pl/pl/modele-zestawy/2855-slonce-ziemia-i-ksiezyc-w-ruchu-model-iv-tellurium.html" target="_blank" rel="noopener">Słońce, Ziemia i Księżyc w ruchu - model IV (tellurim)</a></td><td class="amount">365,00 zł</td></tr>
+
+          <tr class="sum"><td>Suma</td><td class="amount">762,40 zł</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- allegro.pl -->
+    <!-- ALLEGRO -->
     <section class="section">
-      <div class="section-header">
-        <div class="section-title">
-          allegro.pl
-          <span class="badge">zamówienie</span>
-        </div>
-      </div>
-
+      <h2>allegro.pl <small>Zamówienie: 2 725,80 zł (dostawa za darmo)</small></h2>
       <table>
-        <colgroup>
-          <col class="col-item" />
-          <col class="col-price" />
-        </colgroup>
+        <colgroup><col /><col /></colgroup>
         <thead>
-          <tr>
-            <th>Przedmiot</th>
-            <th style="text-align:right;">Kwota</th>
-          </tr>
+          <tr><th>Przedmiot</th><th class="amount">Kwota</th></tr>
         </thead>
         <tbody>
-          <tr><td class="item">Regał biurowy Szafa zamykana na klucz RODO M2D biały 60 x 32 cm</td><td class="price">539,76 zł</td></tr>
-          <tr><td class="item">Wskaźnik laserowy w kolorze czerwonym</td><td class="price">25,99 zł</td></tr>
-          <tr><td class="item">Wskaźnik laserowy w kolorze niebieskim/fioletowym</td><td class="price">25,99 zł</td></tr>
-          <tr class="sum-row"><td>Suma</td><td class="price">591,74 zł</td></tr>
+          <tr><td>Regał biurowy Szafa zamykana na klucz RODO M2D biały 60 x 32 cm</td><td class="amount">539,76 zł</td></tr>
+          <tr><td>Wskaźnik laserowy w kolorze czerwonym</td><td class="amount">25,99 zł</td></tr>
+          <tr><td>Wskaźnik laserowy w kolorze niebieskim/fioletowym</td><td class="amount">25,99 zł</td></tr>
+
+          <tr class="sum"><td>Suma</td><td class="amount">2 725,80 zł</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- summary -->
-    <section class="section">
-      <div class="section-header">
-        <div class="section-title">Podsumowanie</div>
-      </div>
-
-      <div class="summary-grid">
-        <div class="summary-row"><span>eduwis.pl</span><strong>867,74 zł</strong></div>
-        <div class="summary-row"><span>jangar.pl</span><strong>3 488,20 zł</strong></div>
-        <div class="summary-row"><span>allegro.pl</span><strong>591,74 zł</strong></div>
-        <div class="summary-row summary-total"><span>Łącznie</span><strong>4 947,68 zł</strong></div>
-      </div>
-    </section>
+    <!-- PODSUMOWANIE -->
+    <div class="grand">
+      <strong>Podsumowanie (wszystkie tabelki)</strong>
+      <span>591,74 + 762,40 + 2 725,80 + 762,40 + 2 725,80 = <b>7 567,? zł</b> (bez kosztów wysyłki)</span>
+    </div>
 
   </div>
 </body>
