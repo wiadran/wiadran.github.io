@@ -45,8 +45,9 @@
       border-collapse:collapse;
       table-layout:fixed; /* <-- wyrównuje kolumny między tabelami */
     }
-    colgroup col:nth-child(1){width:78%}
-    colgroup col:nth-child(2){width:22%}
+    colgroup col:nth-child(1){width:66%}
+    colgroup col:nth-child(2){width:20%}
+    colgroup col:nth-child(3){width:14%}
     thead th{
       background:var(--head);
       color:#111827;
@@ -66,7 +67,11 @@
       overflow-wrap:anywhere;
     }
     tbody tr:hover td{background:#fafafa}
+    tbody tr.realized td{background:#f3fcf5}
+    tbody tr.realized:hover td{background:#eaf8ee}
     td.amount{ text-align:right; white-space:nowrap; font-variant-numeric: tabular-nums; }
+    th.done, td.done{ text-align:center; font-weight:700; }
+    td.done{ color:#16a34a; }
     a{
       color:var(--accent);
       text-decoration:none;
@@ -134,7 +139,7 @@
   <div class="wrap">
 
     <div class="tabs" role="tablist" aria-label="Listy zakupów">
-      <button class="tab-btn" role="tab" id="tabbtn-1" aria-controls="tab-1" aria-selected="true">Składka – planowane zakupy</button>
+      <button class="tab-btn" role="tab" id="tabbtn-1" aria-controls="tab-1" aria-selected="true">Sk&#322;adka - zakupy</button>
       <button class="tab-btn" role="tab" id="tabbtn-2" aria-controls="tab-2" aria-selected="false">Szkoła – zakupy realizowane</button>
     </div>
 
@@ -143,7 +148,7 @@
 
     <!-- JANGAR – lista (długa) -->
     <section class="section">
-      <h2>jangar.pl <small>Lista (głównie fizyka)</small></h2>
+      <h2>jangar.pl</h2>
       <table>
         <colgroup><col /><col /></colgroup>
         <thead>
@@ -389,6 +394,180 @@
       btn1.addEventListener('click', () => activate(1));
       btn2.addEventListener('click', () => activate(2));
 
+      const realizedFromInvoices = [
+        'Zestaw do badania rozszerzalnosci cieplnej',
+        'Zestaw do demonstracji Prawa Archimedesa',
+        'Naczynia polaczone',
+        'Naczynia kapilarne',
+        'Dynamometr Silomierz zestaw 6',
+        'Radiometr Crookesa',
+        'Paleczka elektrostatyczna szklana',
+        'Magnesy neodymowe',
+        'Igla magnetyczna',
+        'Rozszerzony zestaw do magnetyzmu i demonstracji pradow wirowych',
+        'Przewody bananowe do pietrowego dolaczania',
+        'Model dzialania silnika elektrycznego pradu stalego',
+        'Kolyska Newtona',
+        'Kamertony z pudlami rezonansowymi',
+        'Cylinder miarowy 50ml',
+        'Waga elektroniczna przenosna',
+        'Zestaw magnetyczny do optyki geometrycznej z laserem diodowym',
+        'Podstawowe obwody elektryczne',
+        'Balansujacy ptak',
+        'Rura Newtona',
+        'Podwojny stozek',
+        'Lewitujace magnesy',
+        'Elektromagnes - zestaw w pudelku',
+        'Dwa magnesy sztabkowe 180x27x15mm',
+        'Magnes podkowiasty 106x86x33,5mm',
+        'Zasilacz szkolny 15V/2A DC LED',
+        'Zestaw do badania dyfrakcji swiatla na szczelinie',
+        'Zestaw do badania interferencji swiatla - doswiadczenie Young',
+        'Przyrzad do demonstracji przemiany pracy w energie wewnetrzna'
+      ];
+
+      function normalizeText(value) {
+        return value
+          .toLowerCase()
+          .replace(/[\u0142\u0141]/g, 'l')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, ' ')
+          .trim();
+      }
+
+      const realizedNeedles = realizedFromInvoices.map(normalizeText);
+      const forcedRealizedKeywordGroups = [
+        ['naczynia', 'polaczone'],
+        ['dynamometr', 'silomierz', 'zestaw', '6szt'],
+        ['paleczka', 'elektrostatyczna', 'szklana'],
+        ['paleczka', 'elektrostatyczna', 'ebonitowa'],
+        ['igla', 'magnetyczna', 'podstawie', '10cm'],
+        ['przewody', 'bananowe', 'pietrowego', '50cm'],
+        ['model', 'dzialania', 'silnika', 'pradu', 'stalego'],
+        ['kolyska', 'newtona'],
+        ['kamertony', 'pudlami', 'rezonansowymi', 'mlotkiem'],
+        ['elektromagnes', 'zestaw', 'pudelku'],
+        ['zestaw', 'badania', 'dyfrakcji', 'szczelinie'],
+        ['zestaw', 'badania', 'interferencji', 'young']
+      ];
+
+      const forcedRealizedDisplayTexts = [
+        'Naczynia polaczone',
+        'Dynamometr/Silomierz - zestaw 6szt.',
+        'Paleczka elektrostatyczna, szklana',
+        'Paleczka elektrostatyczna, ebonitowa',
+        'Igla magnetyczna na 2-czesciowej podstawie 10cm',
+        'Przewody bananowe do pietrowego dolaczania, 50cm',
+        'Model dzialania silnika elektrycznego pradu stalego',
+        'Kolyska Newtona',
+        'Kamertony z pudlami rezonansowymi - komplet 2 z mlotkiem'
+      ];
+      function wasRealized(productName) {
+        const normalizedName = normalizeText(productName);
+        if (realizedNeedles.some((needle) => normalizedName.includes(needle))) {
+          return true;
+        }
+
+        return forcedRealizedKeywordGroups.some((group) =>
+          group.every((keyword) => normalizedName.includes(keyword))
+        );
+      }
+
+      function decorateContributionTables() {
+        const tables = tab1.querySelectorAll('section table:not(.checktable)');
+        tables.forEach((table) => {
+          const colgroup = table.querySelector('colgroup');
+          if (colgroup && colgroup.children.length === 2) {
+            colgroup.appendChild(document.createElement('col'));
+          }
+
+          const headRow = table.querySelector('thead tr');
+          if (headRow && !headRow.querySelector('th.done')) {
+            const th = document.createElement('th');
+            th.className = 'done';
+            th.textContent = 'zrealizowano';
+            headRow.appendChild(th);
+          }
+
+          table.querySelectorAll('tbody tr').forEach((row) => {
+            let doneCell = row.querySelector('td.done');
+            if (!doneCell) {
+              doneCell = document.createElement('td');
+              doneCell.className = 'done';
+              row.appendChild(doneCell);
+            }
+
+            if (row.classList.contains('sum')) {
+              doneCell.textContent = '';
+              return;
+            }
+
+            const firstCell = row.querySelector('td');
+            const productText = firstCell ? firstCell.textContent.trim() : '';
+            const normalizedProductText = normalizeText(productText);
+            const forceByExactText = [
+              'Naczynia polaczone',
+              'Dynamometr/Silomierz - zestaw 6szt.',
+              '2x Paleczka elektrostatyczna, szklana',
+              '2x Paleczka elektrostatyczna, ebonitowa',
+              'Igla magnetyczna na 2-czesciowej podstawie 10cm',
+              '4x Przewody bananowe do pietrowego dolaczania, 50cm',
+              'Model dzialania silnika elektrycznego pradu stalego (III)',
+              'Kolyska Newtona',
+              'Kamertony z pudlami rezonansowymi - komplet 2 z mlotkiem'
+            ].includes(productText);
+            const forceByDisplayText = forcedRealizedDisplayTexts.some((text) =>
+              normalizedProductText.includes(normalizeText(text))
+            );
+            const isRealized = forceByExactText || forceByDisplayText || wasRealized(productText);
+            doneCell.innerHTML = isRealized ? '&#10003;' : '';
+            row.classList.toggle('realized', isRealized);
+          });
+        });
+      }
+
+      decorateContributionTables();
+      applyForcedRealizationOverrides();
+
+      function applyForcedRealizationOverrides() {
+        const forcedTexts = [
+          'Naczynia polaczone',
+          'Dynamometr Silomierz zestaw 6szt',
+          'Paleczka elektrostatyczna szklana',
+          'Paleczka elektrostatyczna ebonitowa',
+          'Igla magnetyczna 2 czesciowej podstawie 10cm',
+          'Przewody bananowe pietrowego dolaczania 50cm',
+          'Model dzialania silnika elektrycznego pradu stalego',
+          'Kolyska Newtona',
+          'Kamertony pudlami rezonansowymi mlotkiem'
+        ].map(normalizeText);
+
+        const rows = tab1.querySelectorAll('section table:not(.checktable) tbody tr');
+        rows.forEach((row) => {
+          if (row.classList.contains('sum')) {
+            return;
+          }
+
+          const firstCell = row.querySelector('td');
+          const productText = firstCell ? firstCell.textContent.trim() : '';
+          const normalizedProductText = normalizeText(productText);
+          const forced = forcedTexts.some((text) =>
+            text.split(' ').every((token) => normalizedProductText.includes(token))
+          );
+
+          if (!forced) {
+            return;
+          }
+
+          const cells = row.querySelectorAll('td');
+          const doneCell = cells[cells.length - 1];
+          if (doneCell) {
+            doneCell.innerHTML = '&#10003;';
+          }
+          row.classList.add('realized');
+        });
+      }
       // Keyboard: left/right arrows
       [btn1, btn2].forEach((btn, idx) => {
         btn.addEventListener('keydown', (e) => {
@@ -403,3 +582,22 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
