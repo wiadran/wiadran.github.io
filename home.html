@@ -145,6 +145,13 @@
 
     <div id="tab-1" class="tab-panel active" role="tabpanel" aria-labelledby="tabbtn-1">
 
+    <!-- PLANOWANE ZAKUPY -->
+    <div class="grand">
+      <strong>Planowane zakupy</strong>
+      <span>Planowane: <b>5 296,94 zł</b></span>
+      <span>Zebrano: <b>6 340,00 zł</b></span>
+      <span>Pula dodatkowa: <b>1 043,06 zł</b></span>
+    </div>
 
     <!-- JANGAR – lista (długa) -->
     <section class="section">
@@ -270,11 +277,19 @@
       </table>
     </section>
 
-    <!-- PODSUMOWANIE -->
-    <div class="grand">
-      <strong>Podsumowanie (wszystkie tabelki)</strong>
-      <span> 2 725,80 + 591,74 + 941,00 + 762,40 + 276,40 = <b>5,295.94 zł</b> (bez kosztów wysyłki)</span>
-    </div>
+        <section class="section">
+      <h2>zakupy z puli dodatkowej</h2>
+      <table>
+        <colgroup><col /><col /></colgroup>
+        <thead>
+          <tr><th>Przedmiot</th><th class="amount">Kwota brutto</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Zestaw odczynników i chemikaliów wg zamówienia (faktura 018/2/2026)</td><td class="amount">430,50 zł</td></tr>
+          <tr class="sum"><td>Suma</td><td class="amount">430,50 zł</td></tr>
+        </tbody>
+      </table>
+    </section>
 
   
     </div>
@@ -424,7 +439,8 @@
         'Zasilacz szkolny 15V/2A DC LED',
         'Zestaw do badania dyfrakcji swiatla na szczelinie',
         'Zestaw do badania interferencji swiatla - doswiadczenie Young',
-        'Przyrzad do demonstracji przemiany pracy w energie wewnetrzna'
+        'Przyrzad do demonstracji przemiany pracy w energie wewnetrzna',
+        'Zestaw odczynnikow i chemikaliow wg zamowienia'
       ];
 
       function normalizeText(value) {
